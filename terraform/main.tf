@@ -9,12 +9,12 @@ module "vpc" {
   name = "eks-vpc"
   cidr = "10.0.0.0/16"
 
-  azs             = ["us-east-1a", "us-east-1b"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
+  azs             = ["us-east-1a"]
+  private_subnets = ["10.0.1.0/24"]
+  public_subnets  = ["10.0.101.0/24"]
 
-  enable_nat_gateway = true
-  single_nat_gateway = true
+  enable_nat_gateway = false
+  single_nat_gateway = false
 
   tags = {
     Environment = "dev"
@@ -33,11 +33,11 @@ module "eks" {
 
   eks_managed_node_groups = {
     default = {
-      desired_capacity = 2
-      max_capacity     = 3
+      desired_capacity = 1
+      max_capacity     = 1
       min_capacity     = 1
 
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.micro"]
     }
   }
 
