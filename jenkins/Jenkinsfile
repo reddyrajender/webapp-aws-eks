@@ -3,7 +3,7 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REPO = 'webapp-repo'
-
+        AWS_ACCOUNT_ID = '782388527370'
        CLUSTER_NAME = 'webapp-cluster'
         IMAGE_TAG = "${env.BUILD_NUMBER}"
     }
