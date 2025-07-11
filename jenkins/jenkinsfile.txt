@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-org/web-app-cicd.git'
+                git branch: 'main', url: 'https://github.com/reddyrajender/webapp-aws-eks.git'
             }
         }
 
