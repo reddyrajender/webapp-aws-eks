@@ -1,16 +1,18 @@
 pipeline {
     agent any
+
     environment {
-        AWS_REGION = 'us-east-1'              // or your region
-        AWS_ACCOUNT_ID = '782388527370'       // your actual AWS account ID
-        ECR_REPO_NAME = 'webapp-repo'
-        IMAGE_TAG = 'latest'
-        CLUSTER_NAME = 'webapp-cluster'
-        ECR_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}"
+        AWS_REGION     = 'us-east-1'
+        AWS_ACCOUNT_ID = '782388527370'
+        ECR_REPO       = 'webapp-repo'
+        CLUSTER_NAME   = 'webapp-cluster'
+        IMAGE_TAG      = "${env.BUILD_NUMBER}"  // Tag image with Jenkins build number
+        ECR_URI        = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}"
     }
 
     stages {
-        stage('Checkout') {
+
+        stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/reddyrajender/webapp-aws-eks.git'
             }
@@ -19,36 +21,45 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${ECR_REPO}:${IMAGE_TAG}", './app')
+                    dockerImage = docker.build("${ECR_REPO}:${IMAGE_TAG}", './app')
                 }
             }
         }
 
-          stage('Push to ECR') {
-                   steps {
-                       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-                           script {
-                               sh """
-                                   aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_ACCOUNT_URI
-                                   docker tag ${ECR_REPO}:${IMAGE_TAG} ${ECR_URI}:${IMAGE_TAG}
-                                   docker push ${ECR_URI}:${IMAGE_TAG}
-                               """
-                           }
-                       }
-                   }
-               }
+        stage('Push Docker Image to ECR') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    script {
+                        sh """
+                            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URI
+                            docker tag ${ECR_REPO}:${IMAGE_TAG} ${ECR_URI}:${IMAGE_TAG}
+                            docker push ${ECR_URI}:${IMAGE_TAG}
+                        """
+                    }
+                }
+            }
+        }
 
         stage('Deploy to EKS') {
             steps {
-               withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-                  script {
-                      sh """
-                          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-                          kubectl set image deployment/webapp-deployment webapp-container=${ECR_URI}:${IMAGE_TAG}
-                      """
-                  }
-               }
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    script {
+                        sh """
+                            aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+                            kubectl set image deployment/webapp-deployment webapp-container=${ECR_URI}:${IMAGE_TAG}
+                        """
+                    }
+                }
             }
+        }
+    }
+
+    post {
+        failure {
+            echo 'Deployment failed.'
+        }
+        success {
+            echo 'Application deployed successfully to EKS.'
         }
     }
 }
