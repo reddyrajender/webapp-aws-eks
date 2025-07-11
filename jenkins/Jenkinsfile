@@ -4,7 +4,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         ECR_REPO = 'webapp-repo'
 
-       git  CLUSTER_NAME = 'webapp-cluster'
+       CLUSTER_NAME = 'webapp-cluster'
         IMAGE_TAG = "${env.BUILD_NUMBER}"
     }
 
