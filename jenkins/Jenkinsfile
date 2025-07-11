@@ -46,7 +46,8 @@ pipeline {
                           aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
                           kubectl set image deployment/webapp-deployment webapp-container=${ECR_URI}:${IMAGE_TAG}
                       """
-                }
+                  }
+               }
             }
         }
     }
