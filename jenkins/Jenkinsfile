@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION     = 'us-east-1'
+        AWS_REGION     = 'us-east-1'  //region
         AWS_ACCOUNT_ID = '782388527370'
         ECR_REPO       = 'webapp-repo'
         CLUSTER_NAME   = 'webapp-cluster'
