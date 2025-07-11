@@ -6,7 +6,7 @@ pipeline {
         AWS_ACCOUNT_ID = '782388527370'
         ECR_REPO       = 'webapp-repo'
         CLUSTER_NAME   = 'webapp-cluster'
-        IMAGE_TAG      = "${env.BUILD_NUMBER}"  // Tag image with Jenkins build number
+        IMAGE_TAG      = "${env.BUILD_NUMBER}"
         ECR_URI        = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}"
     }
 
