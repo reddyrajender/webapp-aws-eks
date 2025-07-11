@@ -3,14 +3,14 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REPO = 'webapp-repo'
-        CLUSTER_NAME = 'webapp-cluster'
+       //git  CLUSTER_NAME = 'webapp-cluster'
         IMAGE_TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-org/web-app-cicd.git'
+                git branch: 'main', url: 'https://github.com/reddyrajender/webapp-aws-eks.git'
             }
         }
 
